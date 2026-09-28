@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Faroles del Puerto</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;700;800&family=IBM+Plex+Mono:wght@400;600&display=swap">
+  <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+
+  <div class="contenedor">
+    <h1>Apaga los <span>faroles</span></h1>
+
+    <p class="explicacion">
+      Al tocar un farol cambian él y sus cuatro vecinos (arriba, abajo, izquierda y derecha).
+      Consigue que no quede ninguno encendido.
+    </p>
+
+    <div class="marcador">
+      <div><small>Movimientos</small><strong id="movimientos">0</strong></div>
+      <div><small>Objetivo</small><strong id="objetivo">0</strong></div>
+      <div><small>Encendidos</small><strong id="encendidos">0</strong></div>
+    </div>
+
+    <div class="tablero" id="tablero"></div>
+
+    <div class="botones">
+      <button class="boton principal" id="boton-nuevo">Nuevo puerto</button>
+      <button class="boton" id="boton-deshacer">Deshacer</button>
+      <button class="boton" id="boton-reiniciar">Reiniciar</button>
+      <button class="boton" id="boton-pista">Pista</button>
+      <select id="selector-tamano" aria-label="Tamaño del tablero">
+        <option value="3">3 × 3</option>
+        <option value="4">4 × 4</option>
+        <option value="5" selected>5 × 5</option>
+        <option value="6">6 × 6</option>
+      </select>
+    </div>
+
+    <p class="mensaje" id="mensaje"></p>
+  </div>
+
+  <script src="juego.js"></script>
+</body>
+</html>
