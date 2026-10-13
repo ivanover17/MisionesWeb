@@ -4,8 +4,13 @@
  */
 
 const MAX_INGREDIENTS = 20;
-// new URL + import.meta.url funciona igual en el navegador sin Vite y en la build.
-export const FALLBACK_IMAGE = new URL('../assets/plate.svg', import.meta.url).href;
+// Plato vacío en línea (data URI): no depende de rutas, así funciona con Vite, Live Server o file://.
+export const FALLBACK_IMAGE = `data:image/svg+xml,${encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">' +
+    '<rect width="120" height="120" fill="#f3e9d6"/>' +
+    '<circle cx="60" cy="60" r="38" fill="#fffaf0" stroke="#c0492b" stroke-width="4"/>' +
+    '<circle cx="60" cy="60" r="24" fill="none" stroke="#e2d3b5" stroke-width="3"/></svg>',
+)}`;
 
 const clean = (value) => (typeof value === 'string' ? value.trim() : '');
 

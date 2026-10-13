@@ -29,15 +29,21 @@ npm run build    # build de producción en dist/
 npm run preview  # sirve la build
 ```
 
-Como solo usa módulos ES nativos y rutas relativas, `index.html` también funciona con
-cualquier servidor estático (p. ej. Live Server de VS Code). Abrirlo con doble clic (`file://`)
-no funciona: los navegadores bloquean los módulos ES cargados desde disco.
+### Abrir con doble clic (sin servidor)
+
+`npm run build` genera en `dist/` tres archivos separados: `index.html`, `assets/app.js` y
+`assets/style.css`. Ese `dist/index.html` se puede abrir con doble clic (`file://`) porque la build
+une los módulos en un script clásico: los navegadores bloquean `<script type="module">` desde disco.
+La configuración está en `vite.config.js`. La carpeta `dist/` se puede copiar a cualquier sitio.
+
+El `index.html` de la raíz es el código fuente: se abre con `npm run dev` o con Live Server.
 
 ## Estructura
 
 ```
 ejercicio3/
 ├── index.html              # Maquetación base y contenedores
+├── vite.config.js          # Build abrible con doble clic (JS y CSS separados)
 └── src/
     ├── main.js             # Controlador: estado, eventos y orquestación
     ├── api/mealdb.js       # fetch + async/await, timeout, response.ok, errores
