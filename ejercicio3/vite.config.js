@@ -22,13 +22,18 @@ export default defineConfig({
   base: './',
   plugins: [openFromDisk()],
   build: {
-    // Un único style.css enlazado con <link> en vez de inyectado desde el JS.
+    // Un único CSS enlazado con <link> en vez de inyectado desde el JS.
     cssCodeSplit: false,
+    // Sin minificar para que los archivos generados se puedan leer.
+    minify: false,
+    cssMinify: false,
+    assetsDir: '',
     rollupOptions: {
       output: {
         format: 'iife',
-        entryFileNames: 'assets/app.js',
-        assetFileNames: 'assets/[name][extname]',
+        entryFileNames: 'javascriptMision2.js',
+        assetFileNames: ({ names }) =>
+          names.some((name) => name.endsWith('.css')) ? 'estiloMision2.css' : '[name][extname]',
       },
     },
   },

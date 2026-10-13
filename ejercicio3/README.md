@@ -31,8 +31,8 @@ npm run preview  # sirve la build
 
 ### Abrir con doble clic (sin servidor)
 
-`npm run build` genera en `dist/` tres archivos separados: `index.html`, `assets/app.js` y
-`assets/style.css`. Ese `dist/index.html` se puede abrir con doble clic (`file://`) porque la build
+`npm run build` genera en `dist/` archivos separados y sin minificar: `index.html`, `javascriptMision2.js` y
+`estiloMision2.css`. Ese `dist/index.html` se puede abrir con doble clic (`file://`) porque la build
 une los módulos en un script clásico: los navegadores bloquean `<script type="module">` desde disco.
 La configuración está en `vite.config.js`. La carpeta `dist/` se puede copiar a cualquier sitio.
 
