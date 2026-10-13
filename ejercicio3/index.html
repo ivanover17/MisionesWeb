@@ -1,13 +1,62 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="/plate.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ejercicio3</title>
+    <meta name="description" content="Pasaporte Gastronómico: viaja por el mundo plato a plato con TheMealDB." />
+    <title>Pasaporte Gastronómico</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Inter:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
-    <div id="app"></div>
+    <header class="hero">
+      <p class="hero__kicker">Documento de viaje · Nº 003</p>
+      <h1>Pasaporte <span>Gastronómico</span></h1>
+      <p class="hero__lead">Elige un país, colecciona su sello y descubre qué se cocina allí.</p>
+
+      <div class="controls">
+        <label class="field">
+          <span>Destino</span>
+          <select id="area-select" disabled>
+            <option>Cargando países…</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Buscar plato o ingrediente</span>
+          <input id="search" type="search" placeholder="p. ej. garlic, rice…" disabled autocomplete="off" />
+        </label>
+        <button id="random-btn" type="button" class="btn btn--accent">🎲 Sorpréndeme</button>
+      </div>
+    </header>
+
+    <main class="page">
+      <section aria-labelledby="stamps-title" class="passport">
+        <h2 id="stamps-title" class="section-title">Mis sellos</h2>
+        <div id="stamps" class="stamps"></div>
+      </section>
+
+      <section aria-label="Platos del país" class="results">
+        <div id="country-header"></div>
+        <div id="chips" class="chips"></div>
+        <div id="results"></div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      Datos de <a href="https://www.themealdb.com" target="_blank" rel="noopener">TheMealDB</a> ·
+      Proyecto académico con Vite
+    </footer>
+
+    <dialog id="detail-dialog" class="dialog" aria-labelledby="detail-title">
+      <button type="button" class="dialog__close" data-close aria-label="Cerrar">✕</button>
+      <div id="detail-content"></div>
+    </dialog>
+
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
