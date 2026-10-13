@@ -1,96 +1,99 @@
-# 🛂 Pasaporte Gastronómico
+# Pasaporte Gastronómico
 
-Aplicación web hecha con **Vite + JavaScript vanilla (módulos ES)** que consume la API pública
-[TheMealDB](https://www.themealdb.com/api.php) para viajar por el mundo plato a plato.
+Esta es mi práctica de consumir una API pública con fetch. Elegí [TheMealDB](https://www.themealdb.com/api.php),
+que es una base de datos de recetas de todo el mundo, porque PokeAPI la iba a usar media clase y me
+apetecía algo distinto.
 
-Eliges un país, la app trae sus recetas, calcula sus estadísticas y te "sella" el pasaporte.
-Los sellos se guardan en el navegador para volver a cualquier destino con un clic.
+La idea es que la página sea como un pasaporte: eliges un país, te enseña los platos típicos de allí
+y te pone un "sello". Los sellos se quedan guardados, así que la próxima vez que entras puedes volver
+a un país con un clic.
 
-## Funcionalidades
+## Qué se puede hacer
 
-- **Selector de destino** con todos los países de TheMealDB, ordenados alfabéticamente.
-- **Ficha del país**: número de platos, media de ingredientes por receta e *ingrediente estrella*
-  (el más repetido), todo calculado con `reduce`.
-- **Filtro por categoría** (chips con recuento) y **buscador** por nombre de plato o ingrediente.
-- **Detalle de la receta** en un modal (`<dialog>`) con ingredientes, pasos, etiquetas y vídeo.
-- **🎲 Sorpréndeme**: abre una receta aleatoria.
-- **Sellos** de los últimos países visitados (`localStorage`).
-- Estados de **carga** (olla con burbujas), **error** (con botón *Reintentar*) y **vacío** visibles.
-- Modo claro/oscuro automático y diseño adaptable a móvil.
+- Elegir un país en el desplegable y ver sus platos.
+- Ver unos datos del país: cuántos platos hay, cuántos ingredientes llevan de media y cuál es el
+  ingrediente que más se repite (en España sale el chorizo, cómo no).
+- Filtrar por categoría (Pork, Seafood, Dessert…) o buscar por nombre o por ingrediente.
+- Pinchar en un plato para ver la receta entera: ingredientes, pasos y el vídeo de YouTube si lo tiene.
+- El botón 🎲 *Sorpréndeme* te saca una receta al azar.
+- Mientras carga sale una olla con burbujas, y si falla algo sale un mensaje con un botón para reintentar.
 
-## Puesta en marcha
+## Cómo arrancarlo
 
-Requisitos: Node.js 20 o superior.
+Hace falta tener Node instalado (yo uso la versión 24, con la 20 o más debería ir).
 
 ```bash
 npm install
-npm run dev      # servidor de desarrollo
-npm run build    # build de producción en dist/
-npm run preview  # sirve la build
+npm run dev
 ```
 
-### Abrir con doble clic (sin servidor)
+y luego abrir http://localhost:5173 en el navegador.
 
-`npm run build` genera en `dist/` archivos separados y sin minificar: `index.html`, `javascriptMision2.js` y
-`estiloMision2.css`. Ese `dist/index.html` se puede abrir con doble clic (`file://`) porque la build
-une los módulos en un script clásico: los navegadores bloquean `<script type="module">` desde disco.
-La configuración está en `vite.config.js`. La carpeta `dist/` se puede copiar a cualquier sitio.
+**Ojo:** si abres el `index.html` de la carpeta con doble clic no funciona, se queda en "Cargando
+países…". Es porque el navegador no deja cargar módulos de JavaScript desde un archivo del disco
+(da un error de CORS en la consola). Para eso hay dos opciones:
 
-El `index.html` de la raíz es el código fuente: se abre con `npm run dev` o con Live Server.
+- Usar `npm run dev` o la extensión Live Server de VS Code.
+- Hacer `npm run build`. Eso crea la carpeta `dist/` con un `index.html`, un `javascriptMision2.js`
+  y un `estiloMision2.css`, y esa sí se abre con doble clic. Para que funcione cambié la
+  configuración en `vite.config.js` para que junte todos los módulos en un solo archivo JS normal,
+  y lo dejé sin minificar para que se pueda leer.
 
-## Estructura
+## Cómo está organizado
 
 ```
 ejercicio3/
-├── index.html              # Maquetación base y contenedores
-├── vite.config.js          # Build abrible con doble clic (JS y CSS separados)
+├── index.html
+├── vite.config.js
 └── src/
-    ├── main.js             # Controlador: estado, eventos y orquestación
-    ├── api/mealdb.js       # fetch + async/await, timeout, response.ok, errores
-    ├── logic/meals.js      # Transformación pura con map/filter/reduce
-    ├── ui/render.js        # Pintado en el DOM (cargando, error, vacío, tarjetas, detalle)
-    ├── storage/passport.js # Sellos en localStorage
-    ├── assets/plate.svg    # Favicon e imagen de reserva
+    ├── main.js              -> une todo: guarda el estado y escucha los clics
+    ├── api/mealdb.js        -> las llamadas a la API
+    ├── logic/meals.js       -> limpia los datos y calcula las estadísticas
+    ├── ui/render.js         -> pinta las cosas en la página
+    ├── storage/passport.js  -> guarda los sellos en localStorage
+    ├── assets/plate.svg     -> el icono
     └── style.css
 ```
 
-Cada capa tiene una única responsabilidad: `api` no conoce el DOM, `logic` no hace peticiones
-ni pinta, y `render` solo recibe datos ya limpios.
+La idea es que cada archivo haga una sola cosa. El de la API no toca el HTML, el de la lógica no hace
+fetch ni pinta nada, y el de render recibe los datos ya limpios y solo se encarga de mostrarlos.
 
-## Decisiones técnicas
+## Cosas que me han parecido interesantes
 
-### Asincronía
-- Todas las peticiones usan `async/await` dentro de `try/catch` y comprueban `response.ok`.
-- `AbortSignal.timeout` corta peticiones colgadas (8 s) y un `AbortController` cancela la
-  petición anterior si el usuario cambia de país rápido, evitando que una respuesta vieja pise a la nueva.
-- Las recetas de un país se piden **en paralelo** con `Promise.allSettled`: si alguna falla,
-  se muestran las demás y se avisa de cuántas no se pudieron cargar.
-- Los errores se traducen a mensajes comprensibles mediante una clase `ApiError`.
+**Lo asíncrono.** Todas las peticiones van con `async/await` y `try/catch`, y se mira `response.ok`
+porque fetch no da error con un 404 o un 500, solo cuando no hay conexión. También hay un timeout de
+8 segundos para que no se quede cargando para siempre. Otra cosa: si cambias de país muy rápido, la
+petición anterior se cancela con un `AbortController`, porque si no a veces llegaba tarde la respuesta
+del país viejo y te pintaba los platos que no eran.
 
-### Transformación de datos
-- La API trae los ingredientes "aplanados" en `strIngredient1…20` / `strMeasure1…20`;
-  se convierten en un array con `Array.from(...).map(...).filter(...)`.
-- Categorías e ingrediente estrella se obtienen con `reduce` (tabla de frecuencias) + `sort`.
-- Los filtros encadenan `filter` y `some`. No hay bucles `for` en el código.
+Las recetas de cada país se piden todas a la vez con `Promise.allSettled` (hasta 16). Usé `allSettled`
+en vez de `Promise.all` porque así, si falla alguna, se enseñan las demás y sale un aviso de cuántas no
+cargaron, en vez de fallar todo.
 
-### Robustez
-- TheMealDB responde `{ meals: null }` cuando no hay resultados e incluso `{ meals: "Invalid ID" }`;
-  `extractMeals` lo normaliza siempre a un array.
-- Muchos países de la lista no tienen recetas: se muestra un estado vacío en lugar de romper.
-- Campos `null`, cadenas vacías o con espacios se limpian y reciben valores por defecto.
-- Solo se aceptan URLs `http(s)` (vídeo, fuente, imagen) y todo el texto se escapa antes de
-  insertarlo en el DOM para evitar inyección de HTML.
-- Las imágenes rotas se sustituyen por un plato vacío, y si `localStorage` no está disponible
-  la app sigue funcionando sin sellos.
+**Transformar los datos.** La API tiene una forma un poco rara de dar los ingredientes: en vez de una
+lista, vienen en 20 campos sueltos (`strIngredient1`, `strIngredient2`… hasta 20), y los que no se usan
+vienen vacíos o con un espacio. Los convierto en un array con `Array.from` + `map` + `filter`. Las
+estadísticas del país se sacan con `reduce`, y el buscador usa `filter` y `some`. No he usado ningún
+bucle `for`.
 
-## Declaración de uso de IA
+**Que no explote.** Mientras probaba me encontré con varias cosas raras de la API:
 
-Este proyecto se ha desarrollado con ayuda de **Claude (Anthropic)** a través de Claude Code.
-La IA se usó para generar la estructura inicial del proyecto, proponer la separación en módulos,
-escribir buena parte del código y de los estilos, y redactar este README.
-He revisado el código, lo he probado contra la API real (países sin recetas, IDs inválidos,
-cancelación de peticiones) y entiendo y puedo explicar cada una de las partes.
+- Cuando no hay resultados devuelve `{ meals: null }` en vez de un array vacío.
+- Si buscas una receta con un ID que no existe devuelve `{ meals: "Invalid ID" }`, un texto.
+- Hay casi 200 países en la lista, pero la mayoría no tiene ninguna receta.
+
+Todo eso se controla y sale un mensaje en vez de romperse. Además, el texto que viene de la API se
+escapa antes de meterlo en el HTML, los enlaces solo se aceptan si empiezan por http/https, y si una
+foto no carga se pone un plato vacío en su lugar.
+
+## Uso de IA
+
+He usado Claude (de Anthropic), a través de Claude Code, para hacer este proyecto. Me ayudó a crear el
+proyecto con Vite, a decidir cómo separar los módulos y a escribir gran parte del código, los estilos y
+este README. También me ayudó a resolver por qué la página no cargaba al abrirla con doble clic.
+Yo he revisado el resultado y lo he probado en el navegador.
 
 ## Créditos
 
-Datos e imágenes: [TheMealDB](https://www.themealdb.com) (API pública gratuita, clave de pruebas `1`).
+Los datos y las fotos son de [TheMealDB](https://www.themealdb.com), que tiene una API gratis
+para pruebas.
