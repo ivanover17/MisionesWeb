@@ -1,12 +1,23 @@
 {
-  "name": "ejercicio3",
-  "version": "0.0.0",
+  "name": "pasaporte-gastronomico",
+  "version": "1.0.0",
   "private": true,
+  "description": "Viaja por el mundo plato a plato: SPA con Vite que consume TheMealDB usando fetch, async/await y módulos ES.",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"
+  },
+  "keywords": [
+    "vite",
+    "fetch",
+    "async-await",
+    "themealdb",
+    "es-modules"
+  ],
+  "engines": {
+    "node": ">=20"
   },
   "devDependencies": {
     "vite": "^8.3.0"
