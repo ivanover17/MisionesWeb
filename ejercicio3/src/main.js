@@ -2,7 +2,6 @@
  * Punto de entrada: guarda el estado, escucha eventos y coordina
  * API (datos crudos) -> lógica (transformación) -> render (DOM).
  */
-import './style.css';
 import { ApiError, getAreas, getMealById, getMealsByArea, getRandomMeal } from './api/mealdb.js';
 import {
   buildCountryStats,

@@ -29,18 +29,22 @@ npm run build    # build de producción en dist/
 npm run preview  # sirve la build
 ```
 
+Como solo usa módulos ES nativos y rutas relativas, `index.html` también funciona con
+cualquier servidor estático (p. ej. Live Server de VS Code). Abrirlo con doble clic (`file://`)
+no funciona: los navegadores bloquean los módulos ES cargados desde disco.
+
 ## Estructura
 
 ```
 ejercicio3/
 ├── index.html              # Maquetación base y contenedores
-├── public/plate.svg        # Favicon e imagen de reserva
 └── src/
     ├── main.js             # Controlador: estado, eventos y orquestación
     ├── api/mealdb.js       # fetch + async/await, timeout, response.ok, errores
     ├── logic/meals.js      # Transformación pura con map/filter/reduce
     ├── ui/render.js        # Pintado en el DOM (cargando, error, vacío, tarjetas, detalle)
     ├── storage/passport.js # Sellos en localStorage
+    ├── assets/plate.svg    # Favicon e imagen de reserva
     └── style.css
 ```
 

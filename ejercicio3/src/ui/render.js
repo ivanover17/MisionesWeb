@@ -2,6 +2,7 @@
  * Capa de presentación: recibe datos ya transformados y los pinta.
  * Todo texto que viene de la API pasa por escapeHTML antes de entrar en el DOM.
  */
+import { FALLBACK_IMAGE } from '../logic/meals.js';
 
 const escapeHTML = (value) =>
   String(value ?? '').replace(
@@ -17,10 +18,9 @@ const initials = (text) => {
     .toUpperCase();
 };
 
-const FALLBACK_IMAGE = '/plate.svg';
 
 /** TheMealDB sirve miniaturas añadiendo /preview a la URL de la imagen. */
-const thumbnail = (url) => (url.startsWith('http') ? `${url}/preview` : url);
+const thumbnail = (url) => (url === FALLBACK_IMAGE ? url : `${url}/preview`);
 
 /** Si una imagen falla (404, sin red…) se cambia por el plato vacío. */
 function useImageFallback(container) {

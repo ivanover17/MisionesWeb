@@ -4,7 +4,8 @@
  */
 
 const MAX_INGREDIENTS = 20;
-const FALLBACK_IMAGE = '/plate.svg';
+// new URL + import.meta.url funciona igual en el navegador sin Vite y en la build.
+export const FALLBACK_IMAGE = new URL('../assets/plate.svg', import.meta.url).href;
 
 const clean = (value) => (typeof value === 'string' ? value.trim() : '');
 
