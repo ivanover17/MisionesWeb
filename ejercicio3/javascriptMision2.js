@@ -77,6 +77,10 @@ async function getMealById(id, options) {
   return meal ?? null;
 }
 
+async function searchMealsByName(query, options) {
+  return extractMeals(await fetchJSON(`/search.php?s=${encodeURIComponent(query)}`, options));
+}
+
 async function getRandomMeal(options) {
   const [meal] = extractMeals(await fetchJSON('/random.php', options));
   return meal ?? null;
@@ -482,6 +486,8 @@ const state = {
 
 // Un controlador por "zona" para cancelar peticiones que se han quedado viejas.
 let areaRequest = null;
+let searchRequest = null;
+let searchTimer = null;
 let detailRequest = null;
 
 const isAbort = (error) => error?.name === 'AbortError';
@@ -516,6 +522,8 @@ async function loadAreas() {
 
 async function loadArea(area) {
   areaRequest?.abort();
+  searchRequest?.abort();
+  clearTimeout(searchTimer);
   const controller = new AbortController();
   areaRequest = controller;
   const { signal } = controller;
@@ -525,7 +533,6 @@ async function loadArea(area) {
   dom.areaSelect.value = area;
   dom.search.value = '';
   Object.assign(state, { country: '', meals: [], filters: { query: '', category: 'all' } });
-  dom.search.disabled = true;
   renderCountryHeader(dom.header, {});
   renderCategoryChips(dom.chips, [], 'all');
   renderLoading(dom.results, `Viajando a ${country}…`);
@@ -560,11 +567,44 @@ async function loadArea(area) {
     });
     state.stamps = addStamp(state.stamps, { area, country });
     renderStamps(dom.stamps, state.stamps);
-    dom.search.disabled = false;
     updateResults();
   } catch (error) {
     if (isAbort(error)) return;
     renderError(dom.results, describeError(error), () => loadArea(area));
+  }
+}
+
+/* ---------- Búsqueda en todas las recetas (sin país elegido) ---------- */
+
+async function searchAll(query) {
+  searchRequest?.abort();
+  const controller = new AbortController();
+  searchRequest = controller;
+
+  Object.assign(state, { meals: [], filters: { query, category: 'all' } });
+  renderCategoryChips(dom.chips, [], 'all');
+
+  if (!query.trim()) {
+    renderEmpty(dom.results, 'Elige un destino o pulsa un sello para empezar el viaje.');
+    return;
+  }
+
+  renderLoading(dom.results, `Buscando «${query}» por todo el mundo…`);
+
+  try {
+    const meals = (await searchMealsByName(query.trim(), { signal: controller.signal }))
+      .map(normalizeMeal)
+      .filter(Boolean);
+
+    if (meals.length === 0) {
+      renderEmpty(dom.results, `No hay ninguna receta con «${query}». Prueba en inglés: chicken, pasta, rice…`);
+      return;
+    }
+    state.meals = meals;
+    updateResults();
+  } catch (error) {
+    if (isAbort(error)) return;
+    renderError(dom.results, describeError(error), () => searchAll(query));
   }
 }
 
@@ -635,8 +675,16 @@ dom.stamps.addEventListener('click', (event) => {
 });
 
 dom.search.addEventListener('input', (event) => {
-  state.filters.query = event.target.value;
-  updateResults();
+  const query = event.target.value;
+
+  // Con un país elegido se filtra lo que ya está cargado; si no, se busca en la API.
+  if (state.country) {
+    state.filters.query = query;
+    updateResults();
+    return;
+  }
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => searchAll(query), 400);
 });
 
 dom.chips.addEventListener('click', (event) => {
