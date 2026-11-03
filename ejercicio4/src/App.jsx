@@ -75,13 +75,6 @@ export default function App() {
       <main className="page">
         <StampList stamps={stamps} activeArea={area} onSelect={handleAreaChange} />
 
-        <ShoppingBasket
-          items={basket.items}
-          onToggle={basket.toggle}
-          onRemoveRecipe={basket.remove}
-          onClearBought={basket.clearBought}
-        />
-
         <section aria-label="Platos" className="results">
           <ResultsSection
             key={area || `search:${searchTerm}`}
@@ -93,6 +86,13 @@ export default function App() {
             onOpenMeal={(id) => setDetail({ type: 'meal', id })}
           />
         </section>
+
+        <ShoppingBasket
+          items={basket.items}
+          onToggle={basket.toggle}
+          onRemoveRecipe={basket.remove}
+          onClearBought={basket.clearBought}
+        />
       </main>
 
       <Modal open={detail !== null} onClose={closeDetail} labelledBy={DETAIL_TITLE_ID}>
