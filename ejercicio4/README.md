@@ -40,7 +40,19 @@ npm install
 npm run dev
 ```
 
-Y abrir http://localhost:5173. Otros comandos: `npm run build` (genera `dist/`), `npm run preview`
+Y abrir http://localhost:5173.
+
+**Ojo:** si abres `index.html` con doble clic, la página sale **en blanco**. No es un fallo: ese
+`index.html` carga `src/main.jsx`, que es JSX y además un módulo, y el navegador no deja cargar
+módulos desde un archivo del disco (en la consola sale un error de CORS). Igual que en la M2, hay
+dos formas de verlo:
+
+- `npm run dev` (lo normal mientras programas).
+- `npm run build` y abrir **`dist/index.html`** con doble clic. Para que eso funcione, en
+  `vite.config.js` pongo rutas relativas (`base: './'`), genero un único JS normal (formato `iife`)
+  en vez de un módulo y quito el `type="module"` del HTML final. Los estilos van dentro de ese JS.
+
+Otros comandos: `npm run build` (genera `dist/`), `npm run preview`
 (sirve lo generado) y `npm run lint` (pasa oxlint con las reglas de hooks, incluida
 `exhaustive-deps` para las dependencias de los efectos).
 
