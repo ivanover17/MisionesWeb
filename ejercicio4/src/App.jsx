@@ -1,7 +1,11 @@
 import { useState } from 'react';
 import Header from './components/Header.jsx';
+import MealDetail, { DETAIL_TITLE_ID } from './components/MealDetail.jsx';
+import Modal from './components/Modal.jsx';
+import RandomMeal from './components/RandomMeal.jsx';
 import ResultsSection from './components/ResultsSection.jsx';
 import StampList from './components/StampList.jsx';
+import { EmptyState } from './components/Status.jsx';
 import { useDebouncedValue } from './hooks/useDebouncedValue.js';
 import { useAreaMeals, useAreas, useRecipeSearch } from './hooks/useRecipes.js';
 import { useStamps } from './hooks/useStamps.js';
@@ -11,11 +15,13 @@ import { useStamps } from './hooks/useStamps.js';
  * (lifting state up) y lo reparte por props:
  *  - area:  el país elegido (lo usan Header, StampList y ResultsSection)
  *  - query: el texto del buscador (lo usan Header y ResultsSection)
+ *  - detail: qué hay abierto en la modal: null, { type: 'meal', id } o { type: 'random' }
  * Todo lo demás (nombre del país, modo búsqueda, platos…) se deriva.
  */
 export default function App() {
   const [area, setArea] = useState('');
   const [query, setQuery] = useState('');
+  const [detail, setDetail] = useState(null);
 
   const { stamps, addStamp } = useStamps();
   const areasRequest = useAreas();
@@ -30,15 +36,18 @@ export default function App() {
 
   const country = area ? findCountryName(area, areasRequest.data, stamps) : '';
 
+  // Las tarjetas salen de recetas ya cargadas, así que la receta abierta se
+  // busca por id en vez de copiarla al estado (y no hace falta volver a pedirla).
+  const loadedMeals = activeRequest.data?.meals ?? [];
+  const openMeal = detail?.type === 'meal' ? loadedMeals.find((m) => m.id === detail.id) : null;
+
   // Cambiar de país es un EVENTO: el reset del buscador va aquí, no en un useEffect.
   function handleAreaChange(nextArea) {
     setArea(nextArea);
     setQuery('');
   }
 
-  function handleOpenMeal(id) {
-    console.info('Abrir receta', id);
-  }
+  const closeDetail = () => setDetail(null);
 
   return (
     <>
@@ -48,7 +57,7 @@ export default function App() {
         onAreaChange={handleAreaChange}
         query={query}
         onQueryChange={setQuery}
-        onRandom={() => console.info('Receta al azar')}
+        onRandom={() => setDetail({ type: 'random' })}
       />
 
       <main className="page">
@@ -61,10 +70,20 @@ export default function App() {
             country={country}
             searchTerm={searchTerm}
             filterQuery={area ? query : ''}
-            onOpenMeal={handleOpenMeal}
+            onOpenMeal={(id) => setDetail({ type: 'meal', id })}
           />
         </section>
       </main>
+
+      <Modal open={detail !== null} onClose={closeDetail} labelledBy={DETAIL_TITLE_ID}>
+        {detail?.type === 'random' && <RandomMeal />}
+        {detail?.type === 'meal' &&
+          (openMeal ? (
+            <MealDetail meal={openMeal} />
+          ) : (
+            <EmptyState>Esta receta ya no está en la lista. Prueba con otra.</EmptyState>
+          ))}
+      </Modal>
 
       <footer className="footer">
         Datos de{' '}
