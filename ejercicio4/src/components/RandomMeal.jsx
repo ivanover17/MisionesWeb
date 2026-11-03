@@ -7,7 +7,7 @@ import { EmptyState, ErrorMessage, Loading } from './Status.jsx';
  * y se cancela sola al desmontarse (cuando se cierra), gracias a useAsync.
  * "Otra al azar" reutiliza retry(): misma función, nueva petición, otro plato.
  */
-export default function RandomMeal() {
+export default function RandomMeal({ basketMealIds, onToggleBasket }) {
   const { status, data: meal, error, retry } = useRandomMeal();
 
   if (status === 'loading') return <Loading message="Emplatando…" />;
@@ -17,6 +17,8 @@ export default function RandomMeal() {
   return (
     <MealDetail
       meal={meal}
+      inBasket={basketMealIds.has(meal.id)}
+      onToggleBasket={onToggleBasket}
       extraActions={
         <button type="button" className="btn btn--accent" onClick={retry}>
           🎲 Otra al azar

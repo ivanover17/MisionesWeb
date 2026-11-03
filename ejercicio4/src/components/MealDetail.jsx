@@ -5,8 +5,9 @@ export const DETAIL_TITLE_ID = 'detail-title';
 /**
  * Ficha completa de una receta. `extraActions` permite al padre añadir botones
  * (por ejemplo "Otra al azar") sin que este componente sepa de dónde viene.
+ * El botón de la cesta solo avisa al padre: la cesta no vive aquí.
  */
-export default function MealDetail({ meal, extraActions = null }) {
+export default function MealDetail({ meal, inBasket, onToggleBasket, extraActions = null }) {
   return (
     <article className="detail">
       <SafeImage className="detail__img" src={meal.image} alt={meal.name} />
@@ -25,7 +26,19 @@ export default function MealDetail({ meal, extraActions = null }) {
           </p>
         )}
 
-        {extraActions && <div className="detail__actions">{extraActions}</div>}
+        <div className="detail__actions">
+          {meal.ingredients.length > 0 && (
+            <button
+              type="button"
+              className={`btn ${inBasket ? 'btn--ghost' : ''}`}
+              aria-pressed={inBasket}
+              onClick={() => onToggleBasket(meal)}
+            >
+              {inBasket ? '✓ En la cesta · Quitar' : '🧺 Añadir a la cesta'}
+            </button>
+          )}
+          {extraActions}
+        </div>
 
         <h3>Ingredientes</h3>
         {meal.ingredients.length > 0 ? (

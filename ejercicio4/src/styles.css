@@ -607,3 +607,99 @@ input:disabled {
   gap: 10px;
   margin-top: 16px;
 }
+
+/* ---------- Cesta de la compra ---------- */
+
+.card__basket {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  font-size: 1.3rem;
+  filter: drop-shadow(0 2px 2px rgb(0 0 0 / 0.25));
+}
+
+.basket {
+  padding: 18px 20px;
+  border: 2px dashed var(--line);
+  border-radius: var(--radius);
+  background: var(--card);
+}
+
+.basket__recipes {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.basket__recipes li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px 4px 12px;
+  border-radius: 999px;
+  background: var(--paper-2);
+  font-size: 0.85rem;
+}
+
+.basket__recipes button {
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font: inherit;
+  padding: 0 4px;
+}
+
+.basket__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
+  gap: 0 24px;
+}
+
+.basket__list li {
+  border-bottom: 1px dotted var(--line);
+}
+
+.basket__list label {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0 10px;
+  align-items: center;
+  padding: 8px 0;
+  cursor: pointer;
+}
+
+.basket__list input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--green);
+}
+
+.basket__name {
+  font-weight: 600;
+  transition: opacity 0.2s;
+}
+
+.basket__measures {
+  grid-column: 2;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.basket__list .is-done .basket__name {
+  text-decoration: line-through;
+  opacity: 0.55;
+}
+
+.basket__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 16px 0 0;
+}

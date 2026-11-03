@@ -13,7 +13,14 @@ import { EmptyState, ErrorMessage, Loading } from './Status.jsx';
  * React crea un componente nuevo y la categoría vuelve a "Todo" sola, sin
  * tener que resetearla a mano ni con un efecto.
  */
-export default function ResultsSection({ request, country, searchTerm, filterQuery, onOpenMeal }) {
+export default function ResultsSection({
+  request,
+  country,
+  searchTerm,
+  filterQuery,
+  basketMealIds,
+  onOpenMeal,
+}) {
   const [category, setCategory] = useState('all');
 
   if (request.status === 'idle') {
@@ -66,7 +73,7 @@ export default function ResultsSection({ request, country, searchTerm, filterQue
       <CategoryChips categories={stats.categories} active={category} onChange={setCategory} />
 
       {visible.length > 0 ? (
-        <MealGrid meals={visible} onOpenMeal={onOpenMeal} />
+        <MealGrid meals={visible} basketMealIds={basketMealIds} onOpenMeal={onOpenMeal} />
       ) : (
         <EmptyState>Ningún plato coincide con «{filterQuery}». Prueba con otro ingrediente.</EmptyState>
       )}

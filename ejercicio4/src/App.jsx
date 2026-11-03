@@ -4,8 +4,10 @@ import MealDetail, { DETAIL_TITLE_ID } from './components/MealDetail.jsx';
 import Modal from './components/Modal.jsx';
 import RandomMeal from './components/RandomMeal.jsx';
 import ResultsSection from './components/ResultsSection.jsx';
+import ShoppingBasket from './components/ShoppingBasket.jsx';
 import StampList from './components/StampList.jsx';
 import { EmptyState } from './components/Status.jsx';
+import { useBasket } from './hooks/useBasket.js';
 import { useDebouncedValue } from './hooks/useDebouncedValue.js';
 import { useAreaMeals, useAreas, useRecipeSearch } from './hooks/useRecipes.js';
 import { useStamps } from './hooks/useStamps.js';
@@ -16,6 +18,7 @@ import { useStamps } from './hooks/useStamps.js';
  *  - area:  el país elegido (lo usan Header, StampList y ResultsSection)
  *  - query: el texto del buscador (lo usan Header y ResultsSection)
  *  - detail: qué hay abierto en la modal: null, { type: 'meal', id } o { type: 'random' }
+ *  - la cesta (useBasket): la usan las tarjetas, la ficha y el panel de la cesta
  * Todo lo demás (nombre del país, modo búsqueda, platos…) se deriva.
  */
 export default function App() {
@@ -24,6 +27,7 @@ export default function App() {
   const [detail, setDetail] = useState(null);
 
   const { stamps, addStamp } = useStamps();
+  const basket = useBasket();
   const areasRequest = useAreas();
 
   // Con país elegido, el buscador filtra lo ya cargado; sin país, busca en la API.
@@ -47,7 +51,15 @@ export default function App() {
     setQuery('');
   }
 
+  // Set con los ids de recetas que están en la cesta (para las tarjetas y la ficha).
+  const basketMealIds = new Set(basket.items.map((item) => item.mealId));
+
   const closeDetail = () => setDetail(null);
+
+  function toggleBasket(meal) {
+    if (basketMealIds.has(meal.id)) basket.remove(meal.id);
+    else basket.add(meal);
+  }
 
   return (
     <>
@@ -63,6 +75,13 @@ export default function App() {
       <main className="page">
         <StampList stamps={stamps} activeArea={area} onSelect={handleAreaChange} />
 
+        <ShoppingBasket
+          items={basket.items}
+          onToggle={basket.toggle}
+          onRemoveRecipe={basket.remove}
+          onClearBought={basket.clearBought}
+        />
+
         <section aria-label="Platos" className="results">
           <ResultsSection
             key={area || `search:${searchTerm}`}
@@ -70,16 +89,23 @@ export default function App() {
             country={country}
             searchTerm={searchTerm}
             filterQuery={area ? query : ''}
+            basketMealIds={basketMealIds}
             onOpenMeal={(id) => setDetail({ type: 'meal', id })}
           />
         </section>
       </main>
 
       <Modal open={detail !== null} onClose={closeDetail} labelledBy={DETAIL_TITLE_ID}>
-        {detail?.type === 'random' && <RandomMeal />}
+        {detail?.type === 'random' && (
+          <RandomMeal basketMealIds={basketMealIds} onToggleBasket={toggleBasket} />
+        )}
         {detail?.type === 'meal' &&
           (openMeal ? (
-            <MealDetail meal={openMeal} />
+            <MealDetail
+              meal={openMeal}
+              inBasket={basketMealIds.has(openMeal.id)}
+              onToggleBasket={toggleBasket}
+            />
           ) : (
             <EmptyState>Esta receta ya no está en la lista. Prueba con otra.</EmptyState>
           ))}
