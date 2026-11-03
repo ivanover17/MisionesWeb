@@ -49,6 +49,9 @@ export function normalizeMealSummaries(rawMeals) {
  */
 function extractIngredients(raw) {
   return Array.from({ length: MAX_INGREDIENTS }, (_, i) => ({
+    // El número de hueco (1..20) identifica al ingrediente dentro de la receta:
+    // lo uso como key estable en las listas aunque un ingrediente se repita.
+    slot: i + 1,
     name: clean(raw?.[`strIngredient${i + 1}`]),
     measure: clean(raw?.[`strMeasure${i + 1}`]),
   })).filter(({ name }) => name);
@@ -61,7 +64,8 @@ export function normalizeMeal(raw) {
   const steps = clean(raw.strInstructions)
     .split(/\r?\n/)
     .map((line) => line.trim())
-    .filter((line) => line && !/^step\s*\d+$/i.test(line));
+    .filter((line) => line && !/^step\s*\d+$/i.test(line))
+    .map((text, i) => ({ n: i + 1, text }));
 
   return {
     id: clean(raw.idMeal),
@@ -70,7 +74,7 @@ export function normalizeMeal(raw) {
     area: clean(raw.strArea) || 'Desconocido',
     country: clean(raw.strCountry) || clean(raw.strArea) || 'Desconocido',
     image: safeUrl(raw.strMealThumb) || FALLBACK_IMAGE,
-    tags: clean(raw.strTags).split(',').map((t) => t.trim()).filter(Boolean),
+    tags: [...new Set(clean(raw.strTags).split(',').map((t) => t.trim()).filter(Boolean))],
     ingredients: extractIngredients(raw),
     steps,
     youtube: safeUrl(raw.strYoutube),
