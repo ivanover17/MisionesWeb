@@ -149,9 +149,11 @@ repetidas).
 - Cambiar de país muy rápido para comprobar que no se mezclan los platos (la petición vieja se
   cancela).
 
-**Qué hice yo:** la app original de la M2 (la idea del pasaporte, la API elegida y la capa de datos),
-revisar el código archivo por archivo hasta entender por qué cada `useEffect` y cada estado están
-donde están, y probarlo.
+**Qué es mío:** la app original de la M2 (la idea del pasaporte, la API elegida y la capa de datos
+que se reutiliza aquí) y la decisión de cómo trabajar. En esta misión no he escrito código a mano:
+la IA generó el código, hizo las pruebas de arriba y también subió el repositorio y la entrega.
+Lo que me toca a mí es entenderlo para defenderlo, y para eso le pedí que me explicara cada
+decisión (las de este README).
 
 ## Autopsia
 
