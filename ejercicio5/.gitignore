@@ -1,0 +1,5 @@
+node_modules
+dist
+# La base de datos de json-server cambia al usar la app: se regenera desde db.seed.json
+server/db.json
+.DS_Store

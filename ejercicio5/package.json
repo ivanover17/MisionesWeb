@@ -1,0 +1,34 @@
+{
+  "name": "cenas-del-pasaporte",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "M4 · Full Contact Forms: reservas de cenas temáticas con React Hook Form, Zod y TanStack Query.",
+  "scripts": {
+    "dev": "concurrently -k -n api,web -c blue,green \"npm:api\" \"npm:web\"",
+    "web": "vite",
+    "api": "node server/prepare-db.js && json-server --watch server/db.json --port 3001 --delay 600",
+    "reset-db": "node server/prepare-db.js --reset",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "oxlint"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^7.0.7",
+    "@tanstack/react-query": "^5.107.2",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "react-hook-form": "^7.92.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.3.0",
+    "concurrently": "^10.0.7",
+    "json-server": "^0.17.4",
+    "oxlint": "^1.94.0",
+    "vite": "^8.3.8"
+  }
+}
