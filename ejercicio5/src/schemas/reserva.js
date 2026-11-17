@@ -6,9 +6,10 @@ import { diaDeLaSemana, hoyISO, sumarDias } from '../lib/fechas.js';
  *
  * - `datosReserva`: cómo es una reserva (tipos y formatos). Lo comparten el
  *   formulario y la respuesta del API.
- * - `reservaFormSchema`: lo que se valida al enviar el formulario. Añade la
- *   casilla de condiciones y las reglas del restaurante (fecha futura, lunes
- *   cerrado, al menos un adulto...).
+ * - `reservaFormSchema`: lo que se valida en el formulario. Añade la casilla de
+ *   condiciones, las reglas de la fecha (futura, máx. 90 días, lunes cerrado) y
+ *   las reglas que cruzan varios campos (domingos solo comida, al menos un
+ *   adulto, detalle si la alergia es «otra»).
  * - `reservaSchema`: una reserva tal como la devuelve el servidor (con id y
  *   fecha de creación). Sirve para el reto bonus: comprobar el API con safeParse.
  */
@@ -58,35 +59,43 @@ const datosReserva = z.object({
   comentario: z.string().trim().max(300, { error: 'Máximo 300 caracteres' }).default(''),
 });
 
-export const reservaFormSchema = datosReserva
-  .extend({
-    aceptaCondiciones: z.literal(true, { error: 'Tienes que aceptar las condiciones de la reserva' }),
+// La fecha de una reserva NUEVA: además del formato, reglas del restaurante.
+// (Una reserva guardada puede ser de ayer, por eso esto no está en datosReserva.)
+const fechaReservable = datosReserva.shape.fecha
+  .refine((f) => f > hoyISO(), { error: 'Reserva al menos con un día de antelación' })
+  .refine((f) => f <= sumarDias(hoyISO(), DIAS_MAXIMOS_ANTELACION), {
+    error: `Solo aceptamos reservas para los próximos ${DIAS_MAXIMOS_ANTELACION} días`,
   })
-  .superRefine((datos, ctx) => {
-    const hoy = hoyISO();
-    const limite = sumarDias(hoy, DIAS_MAXIMOS_ANTELACION);
+  .refine((f) => diaDeLaSemana(f) !== 1, { error: 'Los lunes el restaurante está cerrado' });
 
-    if (datos.fecha <= hoy) {
-      ctx.addIssue({ code: 'custom', path: ['fecha'], message: 'Reserva al menos con un día de antelación' });
-    } else if (datos.fecha > limite) {
-      ctx.addIssue({
-        code: 'custom',
-        path: ['fecha'],
-        message: `Solo aceptamos reservas para los próximos ${DIAS_MAXIMOS_ANTELACION} días`,
-      });
-    } else if (diaDeLaSemana(datos.fecha) === 1) {
-      ctx.addIssue({ code: 'custom', path: ['fecha'], message: 'Los lunes el restaurante está cerrado' });
-    } else if (diaDeLaSemana(datos.fecha) === 0 && datos.turno === 'cena') {
-      ctx.addIssue({ code: 'custom', path: ['turno'], message: 'Los domingos solo abrimos para comer' });
-    }
+const camposFormulario = datosReserva.extend({
+  fecha: fechaReservable,
+  aceptaCondiciones: z.literal(true, { error: 'Tienes que aceptar las condiciones de la reserva' }),
+});
 
-    if (datos.ninos >= datos.comensales) {
-      ctx.addIssue({ code: 'custom', path: ['ninos'], message: 'Tiene que venir al menos un adulto' });
-    }
+// Por defecto, Zod no ejecuta los refine del objeto si algún campo ya tiene un error
+// (por ejemplo, si falta la casilla de condiciones). Con `when` cada regla cruzada se
+// comprueba en cuanto SUS campos son válidos, así el usuario ve todos los errores a la vez.
+const cuandoSonValidos =
+  (...campos) =>
+  (payload) =>
+    camposFormulario.pick(Object.fromEntries(campos.map((c) => [c, true]))).safeParse(payload.value).success;
 
-    if (datos.alergias.includes('otra') && datos.detalleAlergia === '') {
-      ctx.addIssue({ code: 'custom', path: ['detalleAlergia'], message: 'Cuéntanos qué otra alergia o intolerancia hay' });
-    }
+export const reservaFormSchema = camposFormulario
+  .refine((d) => !(diaDeLaSemana(d.fecha) === 0 && d.turno === 'cena'), {
+    path: ['turno'],
+    error: 'Los domingos solo abrimos para comer',
+    when: cuandoSonValidos('fecha', 'turno'),
+  })
+  .refine((d) => d.ninos < d.comensales, {
+    path: ['ninos'],
+    error: 'Tiene que venir al menos un adulto',
+    when: cuandoSonValidos('comensales', 'ninos'),
+  })
+  .refine((d) => !d.alergias.includes('otra') || d.detalleAlergia !== '', {
+    path: ['detalleAlergia'],
+    error: 'Cuéntanos qué otra alergia o intolerancia hay',
+    when: cuandoSonValidos('alergias', 'detalleAlergia'),
   });
 
 // Valores con los que arranca el formulario (todos los campos registrados tienen uno).

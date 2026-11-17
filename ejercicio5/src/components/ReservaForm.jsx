@@ -112,7 +112,7 @@ export default function ReservaForm() {
               min={sumarDias(hoy, 1)}
               max={sumarDias(hoy, DIAS_MAXIMOS_ANTELACION)}
               {...a11y('fecha', errors.fecha, true)}
-              {...register('fecha')}
+              {...register('fecha', { deps: ['turno'] })}
             />
           </Campo>
 
@@ -135,7 +135,7 @@ export default function ReservaForm() {
               max={MAX_COMENSALES}
               inputMode="numeric"
               {...a11y('comensales', errors.comensales)}
-              {...register('comensales', { valueAsNumber: true })}
+              {...register('comensales', { valueAsNumber: true, deps: ['ninos'] })}
             />
           </Campo>
 
@@ -156,7 +156,7 @@ export default function ReservaForm() {
         <div className="checks">
           {ALERGIAS.map((a) => (
             <label key={a.value} className="check">
-              <input type="checkbox" value={a.value} {...register('alergias')} />
+              <input type="checkbox" value={a.value} {...register('alergias', { deps: ['detalleAlergia'] })} />
               {a.label}
             </label>
           ))}
