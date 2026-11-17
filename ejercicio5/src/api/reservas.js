@@ -40,7 +40,7 @@ export async function getReservas({ area = '', signal } = {}) {
 
 // POST /reservas. Recibe los datos YA validados por el formulario.
 export async function crearReserva(datos) {
-  const { aceptaCondiciones, ...reserva } = datos; // la casilla no se guarda
+  const { aceptaCondiciones: _casilla, ...reserva } = datos; // la casilla no se guarda
   const creada = await pedirJSON(`${API_URL}/reservas`, {
     method: 'POST',
     body: { ...reserva, creadaEn: new Date().toISOString() },
