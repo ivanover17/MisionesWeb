@@ -1,4 +1,5 @@
 import ReservaForm from './components/ReservaForm.jsx';
+import ReservasList from './components/ReservasList.jsx';
 
 export default function App() {
   return (
@@ -9,6 +10,7 @@ export default function App() {
       </header>
       <main className="contenido">
         <ReservaForm />
+        <ReservasList />
       </main>
     </>
   );
