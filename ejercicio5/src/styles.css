@@ -1,0 +1,390 @@
+/* Misma paleta que el Pasaporte Gastronómico (M2/M3): papel, tinta y sello rojo. */
+:root {
+  --paper: #f6efe1;
+  --card: #fffaf0;
+  --ink: #2b2620;
+  --muted: #6f655a;
+  --line: #ded0b4;
+  --accent: #c0492b;
+  --accent-ink: #fff;
+  --green: #2d4a3e;
+  --ok-bg: #e4efe6;
+  --warn-bg: #fbf0d4;
+  --error: #b3261e;
+  --error-bg: #fbe4e1;
+  --shadow: 0 1px 0 rgb(0 0 0 / 0.04), 0 8px 24px -12px rgb(60 40 20 / 0.35);
+  --radius: 14px;
+
+  color-scheme: light;
+  font-family: Inter, system-ui, sans-serif;
+  color: var(--ink);
+  background: var(--paper);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #1c1916;
+    --card: #2a251f;
+    --ink: #f1e8d8;
+    --muted: #b4a690;
+    --line: #3d362d;
+    --accent: #e3714f;
+    --accent-ink: #1c1916;
+    --green: #8fc0a6;
+    --ok-bg: #22342a;
+    --warn-bg: #3a3020;
+    --error: #ff8a80;
+    --error-bg: #3d2220;
+    color-scheme: dark;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 31px, rgb(0 0 0 / 0.025) 31px 32px),
+    var(--paper);
+  line-height: 1.5;
+}
+
+h1,
+h2,
+h3 {
+  font-family: Fraunces, Georgia, serif;
+  line-height: 1.15;
+  margin: 0;
+}
+
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ---------- Cabecera ---------- */
+.cabecera {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 40px 20px 8px;
+}
+.cabecera h1 {
+  font-size: clamp(2rem, 5vw, 3rem);
+  color: var(--accent);
+}
+.cabecera p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  max-width: 60ch;
+}
+
+/* ---------- Distribución ---------- */
+.contenido {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px 20px 64px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+@media (max-width: 860px) {
+  .contenido {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.tarjeta {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 24px;
+}
+.tarjeta h2 {
+  font-size: 1.6rem;
+}
+
+/* ---------- Formulario ---------- */
+.formulario__intro {
+  margin: 6px 0 16px;
+  color: var(--muted);
+}
+fieldset {
+  border: 0;
+  border-top: 1px dashed var(--line);
+  margin: 0;
+  padding: 16px 0 4px;
+}
+legend {
+  font-family: Fraunces, Georgia, serif;
+  font-weight: 600;
+  font-size: 1.1rem;
+  padding-right: 8px;
+}
+.fila {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+.campo > label {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+input:not([type='checkbox']),
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+  background: var(--paper);
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 12px;
+  width: 100%;
+}
+textarea {
+  resize: vertical;
+}
+select:disabled {
+  opacity: 0.6;
+}
+.campo--error input,
+.campo--error select,
+.campo--error textarea,
+[aria-invalid='true'] {
+  border-color: var(--error);
+  background: var(--error-bg);
+}
+.campo__ayuda {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.campo__error {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--error);
+}
+.campo__error::before {
+  content: '✕ ';
+}
+.checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.check {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 400;
+}
+.checks .check {
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+.checks .check:has(input:checked) {
+  border-color: var(--green);
+  background: var(--ok-bg);
+}
+.check input {
+  accent-color: var(--accent);
+  width: 18px;
+  height: 18px;
+}
+.campo--check {
+  margin-top: 8px;
+}
+
+/* ---------- Botones ---------- */
+.boton {
+  font: inherit;
+  font-weight: 700;
+  border: 0;
+  border-radius: 999px;
+  padding: 12px 22px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  cursor: pointer;
+}
+.boton:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+.boton--secundario {
+  background: transparent;
+  color: var(--ink);
+  border: 1.5px solid var(--line);
+  padding: 8px 14px;
+  font-weight: 600;
+}
+.boton--peligro {
+  background: var(--error);
+  color: #fff;
+  padding: 8px 14px;
+}
+.boton--enlace {
+  background: none;
+  color: var(--muted);
+  padding: 8px;
+  text-decoration: underline;
+}
+
+/* ---------- Avisos y estados ---------- */
+.aviso {
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin: 12px 0;
+}
+.aviso p {
+  margin: 0;
+}
+.aviso--error {
+  background: var(--error-bg);
+  color: var(--error);
+  font-weight: 600;
+}
+.aviso--exito {
+  background: var(--ok-bg);
+  border-left: 5px solid var(--green);
+  display: flex;
+  gap: 8px;
+  align-items: start;
+  justify-content: space-between;
+}
+.aviso--atencion {
+  background: var(--warn-bg);
+  font-size: 0.92rem;
+}
+.aviso--atencion summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.estado {
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.estado--error {
+  color: var(--error);
+  font-weight: 600;
+}
+.estado--error p {
+  margin: 0;
+}
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 3px solid var(--line);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: girar 0.8s linear infinite;
+}
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.actualizando {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+/* ---------- Lista de reservas ---------- */
+.lista__cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.filtro {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-weight: 600;
+  margin: 12px 0;
+}
+.reservas {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 12px;
+  transition: opacity 0.2s;
+}
+.reservas--antiguas {
+  opacity: 0.5;
+}
+.reserva {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px;
+}
+.reserva__sello {
+  grid-row: span 2;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 2.5px double var(--accent);
+  color: var(--accent);
+  display: grid;
+  place-items: center;
+  font-family: Fraunces, Georgia, serif;
+  font-weight: 700;
+  transform: rotate(-12deg);
+}
+.reserva__datos h3 {
+  font-size: 1.15rem;
+}
+.reserva__datos p {
+  margin: 2px 0;
+}
+.reserva__turno {
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--muted);
+}
+.reserva__fecha {
+  font-weight: 600;
+}
+.reserva__fecha::first-letter {
+  text-transform: uppercase;
+}
+.reserva__alergias {
+  font-size: 0.9rem;
+}
+.reserva__comentario {
+  font-style: italic;
+  color: var(--muted);
+}
+.reserva__acciones {
+  grid-column: 2;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+  }
+}

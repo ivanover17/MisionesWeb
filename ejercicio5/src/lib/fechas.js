@@ -24,9 +24,10 @@ export function diaDeLaSemana(iso) {
 
 export function fechaLegible(iso) {
   const [a, m, d] = iso.split('-').map(Number);
-  return new Date(a, m - 1, d).toLocaleDateString('es-ES', {
+  const texto = new Date(a, m - 1, d).toLocaleDateString('es-ES', {
     weekday: 'long',
     day: 'numeric',
     month: 'long',
   });
+  return texto; // «sábado, 5 de diciembre»
 }

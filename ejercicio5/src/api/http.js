@@ -8,7 +8,10 @@ export class HttpError extends Error {
   }
 }
 
-export async function pedirJSON(url, { method = 'GET', body, signal } = {}) {
+export async function pedirJSON(
+  url,
+  { method = 'GET', body, signal, sinConexion = 'No hay conexión con el servidor. ¿Está arrancado (npm run dev)?' } = {},
+) {
   let respuesta;
   try {
     respuesta = await fetch(url, {
@@ -20,7 +23,7 @@ export async function pedirJSON(url, { method = 'GET', body, signal } = {}) {
   } catch (error) {
     // Si TanStack Query cancela la petición, dejamos pasar el AbortError tal cual.
     if (error.name === 'AbortError') throw error;
-    throw new Error('No hay conexión con el servidor. ¿Está arrancado (npm run dev)?');
+    throw new Error(sinConexion);
   }
 
   if (!respuesta.ok) {
